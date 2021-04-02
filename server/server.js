@@ -19,7 +19,10 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to my server!" });
 });
 
-require("./app/routes/patient.routes")(app);
+require("./app/routes/personal-details")(app);
+require("./app/routes/medical-history")(app);
+require("./app/routes/covid-questionaire")(app);
+require("./app/routes/health-details")(app);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
