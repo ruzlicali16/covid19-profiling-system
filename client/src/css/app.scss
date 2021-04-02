@@ -1,1 +1,10 @@
 // app global css in SCSS form
+@import url("https://fonts.googleapis.com/css2?family=Exo:wght@400;500&display=swap");
+
+.q-layout {
+  font-family: "Exo", sans-serif;
+}
+
+.q-dialog {
+  font-family: "Exo", sans-serif;
+}

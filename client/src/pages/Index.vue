@@ -1,17 +1,7 @@
 <template>
   <q-page class="q-pa-md q-gutter-y-md">
-    <div class="row justify-between items-center">
-      <q-btn
-        color="green"
-        icon="check"
-        label="add patient"
-        to="/patient/add-profile"
-      />
-      <q-breadcrumbs>
-        <q-breadcrumbs-el label="Home" icon="home" />
-        <q-breadcrumbs-el label="Components" icon="widgets" />
-        <q-breadcrumbs-el label="Breadcrumbs" icon="navigation" />
-      </q-breadcrumbs>
+    <div class="text-center text-h4 text-green text-weight-medium">
+      List Of Patients
     </div>
     <div>
       <q-table
@@ -21,11 +11,23 @@
         row-key="id"
       >
         <template v-slot:top="props">
-          <div class="col-2 q-table__title">Patients</div>
+          <div
+            class="q-table__title"
+            :class="
+              $q.screen.lt.md ? 'text-center q-pb-sm full-width' : 'col-2 '
+            "
+          >
+            <q-btn
+              color="green"
+              icon="check"
+              label="add patient"
+              to="/patient/add-profile"
+            />
+          </div>
 
           <q-space />
 
-          <div>
+          <div :class="$q.screen.lt.md ? 'text-center q-pb-sm' : 'col-2 '">
             <q-input
               outlined
               dense
@@ -92,7 +94,7 @@
 </template>
 
 <script>
-import patientDataService from "../services/patient-data.service.js";
+import personalDetails from "../services/personal-details.service.js";
 export default {
   name: "PageIndex",
   data() {
@@ -122,7 +124,7 @@ export default {
   },
   methods: {
     retrievePatients() {
-      patientDataService
+      personalDetails
         .getAll()
         .then(response => {
           this.patients = response.data;
@@ -136,7 +138,7 @@ export default {
       this.$router.push(`/patient/edit-profile/${id}`);
     },
     deletePatient(id) {
-      patientDataService
+      personalDetails
         .delete(id)
         .then(response => {
           console.log(response.data);

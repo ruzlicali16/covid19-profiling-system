@@ -10,10 +10,12 @@ const routes = [
       },
       {
         path: "/patient/add-profile",
+        name: "addProfile",
         component: () => import("pages/AddPatients.vue")
       },
       {
         path: "/patient/edit-profile/:id",
+        name: "editProfile",
         component: () => import("pages/AddPatients.vue")
       }
     ]
