@@ -1,5 +1,8 @@
 export default function() {
   return {
-    patientDetails: {}
+    personalDetails: {},
+    medicalHistory: {},
+    covidQuestionaire: {},
+    healthDetails: {}
   };
 }
