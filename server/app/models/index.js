@@ -23,5 +23,6 @@ db.personalDetails = require("./personal-details.model.js")(sequelize, Sequelize
 db.medicalHistory = require("./medical-history.model.js")(sequelize, Sequelize);
 db.covidQuestionaire = require("./covid-questionaire.model.js")(sequelize, Sequelize);
 db.healthDetails = require("./health-details.model.js")(sequelize, Sequelize);
+db.patientDetails = require("./patient-details.model.js")(sequelize, Sequelize);
 
 module.exports = db;

@@ -3,29 +3,17 @@ const CovidQuestionaire = db.covidQuestionaire;
 const Op = db.Sequelize.Op;
 
 exports.create = (req, res) => {
-  if (
-    !req.body.firstSymptoms ||
-    !req.body.secondSymptoms ||
-    !req.body.travelHistory ||
-    !req.body.peopleContacted ||
-    !req.body.household
-  ) {
-    res.status(400).send({
-      message: "Content cannot be empty!",
-    });
-    return;
-  }
-
   const covidQuestionaire = {
-    firstSymptoms: req.body.firstSymptoms,
-    secondSymptoms: req.body.secondSymptoms,
     travelHistory: req.body.travelHistory,
+    visitedCountry: req.body.visitedCountry,
     peopleContacted: req.body.peopleContacted,
     household: req.body.household,
+    symptoms: req.body.symptoms,
   };
 
   CovidQuestionaire.create(covidQuestionaire)
     .then((data) => {
+      console.log("data :>> ", data);
       res.send(data);
     })
     .catch((err) => {
@@ -38,12 +26,12 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  const firstSymptoms = req.query.firstSymptoms;
-  let condition = firstSymptoms
-    ? { firstSymptoms: { [Op.like]: `%${firstSymptoms}` } }
+  const symptoms = req.query.symptoms;
+  let condition = symptoms
+    ? { symptoms: { [Op.like]: `%${symptoms}` } }
     : null;
 
-    CovidQuestionaire.findAll({ where: condition })
+  CovidQuestionaire.findAll({ where: condition })
     .then((data) => {
       res.send(data);
     })
