@@ -1,11 +1,6 @@
-const { sequelize, Sequelize } = require(".");
-
 module.exports = (sequelize, Sequelize) => {
   const CovidQuestionaire = sequelize.define("covidQuestionaire", {
-    firstSymptoms: {
-      type: Sequelize.STRING,
-    },
-    secondSymptoms: {
+    visitedCountry: {
       type: Sequelize.STRING,
     },
     travelHistory: {
@@ -15,6 +10,9 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
     },
     household: {
+      type: Sequelize.STRING,
+    },
+    symptoms: {
       type: Sequelize.STRING,
     },
   });

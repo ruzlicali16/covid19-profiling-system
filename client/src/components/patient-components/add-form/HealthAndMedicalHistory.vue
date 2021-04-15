@@ -8,37 +8,16 @@
       <div class="q-pl-md text-grey-9 text-h5">Health and Medical History</div>
       <q-separator spaced />
       <q-card-section class="row q-col-gutter-x-lg q-col-gutter-y-md">
-        <div class="col-6">
-          <q-option-group
-            :options="firstHealthIssueOpt"
-            label="Notifications"
-            color="green"
-            type="checkbox"
-            v-model="healthIssue.firstHealthIssue"
-          />
-        </div>
-        <div class="col-6">
-          <q-option-group
-            :options="secondHealthIssueOpt"
-            label="Notifications"
-            color="green"
-            type="checkbox"
-            v-model="healthIssue.secondHealthIssue"
-          />
-        </div>
-        <div class="col-6 q-pt-none">
-          <q-checkbox
-            v-model="otherHealthIssueOpt"
-            label="Other"
-            color="green"
-          />
+        <div class="col-12">
+          <div class="text-grey-9">Please list down your diseases</div>
           <q-input
-            v-if="otherHealthIssueOpt"
-            dense
             outlined
-            v-model="healthIssue.otherHealthIssue"
-            label="Please type another option here"
+            v-model="healthIssue.diseases"
+            label="Type here.."
             color="green"
+            type="textarea"
+            stack-label
+            hint="Format: Anemia / Atritis / Gout"
           />
         </div>
         <div class="col-12">
@@ -68,46 +47,18 @@
 </template>
 
 <script>
+import medicalHistory from "../../../services/medical-history.service.js";
+
 export default {
   name: "HealthAndMedicalHistory",
+  emits: ["check-inputs"],
   data() {
     return {
       healthIssue: {
-        firstHealthIssue: [],
-        secondHealthIssue: [],
+        diseases: "",
         smokingHealthIssue: "",
-        otherHealthIssue: "",
         famMedHistory: ""
       },
-      firstHealthIssueOpt: [
-        { label: "Anemia", value: "Anemia" },
-        { label: "Arthritis", value: "Arthritis" },
-        { label: "Gout", value: "Gout" },
-        { label: "Epilepsy Seizures", value: "Epilepsy Seizures" },
-        { label: "Heart Attack", value: "Heart Attack" },
-        { label: "High Blood Pressure", value: "High Blood Pressure" },
-        { label: "Ulcerative Colitis", value: "Ulcerative Colitis" },
-        { label: "Kidney Disease", value: "Kidney Disease" },
-        { label: "Thyroid Problems", value: "Thyroid Problems" },
-        { label: "Venereal Disease", value: "Venereal Disease" },
-        { label: "Bleeding Disorders", value: "Bleeding Disorders" }
-      ],
-      secondHealthIssueOpt: [
-        { label: "Asthma", value: "Asthma" },
-        { label: "Cancer", value: "Cancer" },
-        { label: "Diabetes", value: "Diabetes" },
-        { label: "Heart Disease", value: "Heart Disease" },
-        { label: "Rheumatic Fever", value: "Rheumatic Fever" },
-        { label: "Digestive Problems", value: "Digestive Problems" },
-        { label: "Hepatitis", value: "Hepatitis" },
-        { label: "Liver Disease", value: "Liver Disease" },
-        { label: "Tuberculosis", value: "Tuberculosis" },
-        { label: "Neurological Disorders", value: "Neurological Disorders" },
-        {
-          label: "Lung Disease (Chronic Obstructive Pulmonary Disease)",
-          value: "Lung Disease (Chronic Obstructive Pulmonary Disease)"
-        }
-      ],
       smokingHealthIssueOpt: [
         { label: "No", value: "No" },
         { label: "0-1 pack/day", value: "0-1 pack/day" },
@@ -117,6 +68,34 @@ export default {
       isUpdate: false,
       otherHealthIssueOpt: false
     };
+  },
+  updated() {
+    let healthIssue = this.healthIssue;
+    this.$emit("check-inputs", healthIssue);
+  },
+  mounted() {
+    if (this.$route.params.id) {
+      this.getMedHistoryByID();
+    }
+  },
+  methods: {
+    getMedHistoryByID() {
+      let id = this.$route.params.id;
+      medicalHistory
+        .get(id)
+        .then(response => {
+          console.log(response.data);
+          this.healthIssue = response.data;
+          this.isUpdate = true;
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
+    }
+  },
+  deactivated() {
+    let patient = this.healthIssue;
+    this.$store.dispatch("patient/medicalHistory", patient);
   }
 };
 </script>

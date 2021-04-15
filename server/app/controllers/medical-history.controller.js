@@ -3,29 +3,15 @@ const MedicalHistory = db.medicalHistory;
 const Op = db.Sequelize.Op;
 
 exports.create = (req, res) => {
-  if (
-    !req.body.firstHealthIssue ||
-    !req.body.secondHealthIssue ||
-    !req.body.smokingHealthIssue ||
-    !req.body.otherHealthIssue ||
-    !req.body.famMedHistory
-  ) {
-    res.status(400).send({
-      message: "Content cannot be empty!",
-    });
-    return;
-  }
-
   const medicalHistory = {
-    firstHealthIssue: req.body.firstHealthIssue,
-    secondHealthIssue: req.body.secondHealthIssue,
     smokingHealthIssue: req.body.smokingHealthIssue,
-    otherHealthIssue: req.body.otherHealthIssue,
+    diseases: req.body.diseases,
     famMedHistory: req.body.famMedHistory,
   };
 
   MedicalHistory.create(medicalHistory)
     .then((data) => {
+      console.log(data);
       res.send(data);
     })
     .catch((err) => {
@@ -38,8 +24,10 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  const firstHealthIssue = req.query.firstHealthIssue;
-  let condition = firstHealthIssue ? { firstHealthIssue: { [Op.like]: `%${firstHealthIssue}` } } : null;
+  const smokingHealthIssue = req.query.smokingHealthIssue;
+  let condition = smokingHealthIssue
+    ? { smokingHealthIssue: { [Op.like]: `%${smokingHealthIssue}` } }
+    : null;
 
   MedicalHistory.findAll({ where: condition })
     .then((data) => {

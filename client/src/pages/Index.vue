@@ -34,6 +34,7 @@
               debounce="300"
               v-model="filter"
               placeholder="Search"
+              color="green"
             >
               <template v-slot:append>
                 <q-icon name="search" />
@@ -95,6 +96,11 @@
 
 <script>
 import personalDetails from "../services/personal-details.service.js";
+import medicalHistory from "../services/medical-history.service.js";
+import healthDetails from "../services/health-details.service.js";
+import covidQuestionaire from "src/services/covid-questionaire.service.js";
+import patientDetails from "src/services/patient-details.service.js";
+
 export default {
   name: "PageIndex",
   data() {
@@ -123,29 +129,56 @@ export default {
     this.retrievePatients();
   },
   methods: {
-    retrievePatients() {
-      personalDetails
-        .getAll()
-        .then(response => {
-          this.patients = response.data;
-          console.log(this.patients);
-        })
-        .catch(e => {
-          console.log(e);
-        });
+    async retrievePatients() {
+      let patientObj = {};
+      let patientArr = [];
+      const res = await personalDetails.getAll();
+      let pDetails = res.data;
+      this.patients = pDetails;
     },
     updatePatient(id) {
-      this.$router.push(`/patient/edit-profile/${id}`);
+      this.$q.loading.show();
+      this.$router.push(`/patient/edit-profile/${id}`).then(() => {
+        this.$q.loading.hide();
+      });
     },
     deletePatient(id) {
-      personalDetails
-        .delete(id)
-        .then(response => {
-          console.log(response.data);
-          this.retrievePatients();
+      this.$q
+        .dialog({
+          title: "Delete",
+          message: "Are you sure?",
+          cancel: true,
+          persistent: true
         })
-        .catch(err => {
-          console.log(err.message);
+        .onOk(() => {
+          // console.log('>>>> OK')
+          this.$q.loading.show();
+          personalDetails
+            .delete(id)
+            .then(response => {
+              console.log(response.data);
+              medicalHistory.delete(id).then(response => {
+                console.log(response.data);
+                covidQuestionaire.delete(id).then(response => {
+                  console.log(response.data);
+                  healthDetails.delete(id).then(response => {
+                    console.log(response.data);
+                    patientDetails.delete(id).then(response => {
+                      console.log(response.data);
+                      this.retrievePatients().then(() => {
+                        this.$q.loading.hide();
+                      });
+                    });
+                  });
+                });
+              });
+            })
+            .catch(err => {
+              console.log(err.message);
+            });
+        })
+        .onCancel(() => {
+          // console.log('>>>> Cancel')
         });
     }
   }

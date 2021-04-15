@@ -196,9 +196,6 @@
           />
         </div>
       </q-card-section>
-      <q-card-actions align="center">
-        <q-btn label="Action 1" @click="addPatient()" />
-      </q-card-actions>
     </q-card>
   </q-form>
 </template>
@@ -209,6 +206,7 @@ import provinceJson from "../../../utils/pmb-json.utils.js";
 
 export default {
   name: "PersonalDetails",
+  emits: ["check-inputs"],
   data() {
     return {
       patient: {
@@ -225,12 +223,15 @@ export default {
         currentAddress: "",
         homeAddress: ""
       },
-      id: null,
       isUpdate: false,
       provinceOpt: [],
       municipalOpt: [],
       bgryOpt: []
     };
+  },
+  updated() {
+    let patient = this.patient;
+    this.$emit("check-inputs", patient);
   },
   mounted() {
     provinceJson.getProvinces().then(res => {
@@ -241,20 +242,6 @@ export default {
     }
   },
   methods: {
-    addPatient() {
-      let data = this.patient;
-      personalDetails
-        .create(data)
-        .then(response => {
-          this.$router.push("/").then(() => {
-            this.patient = {};
-          });
-        })
-        .catch(err => {
-          console.log(err.message);
-        });
-    },
-
     getPatientByID() {
       let id = this.$route.params.id;
       personalDetails
@@ -268,7 +255,6 @@ export default {
           console.log(err.message);
         });
     },
-
     updateProfile() {
       let data = this.patient;
       let id = this.$route.params.id;
@@ -283,29 +269,29 @@ export default {
           console.log(err.message);
         });
     },
-
     selectedProvince(selectedProvince) {
       this.patient.municipal = "";
       this.patient.brgy = "";
       this.getMunicipalities(selectedProvince);
     },
-
     getMunicipalities(provincial) {
       provinceJson.getMunicipalities(provincial).then(res => {
         this.municipalOpt = res;
       });
     },
-
     selectedMunicipalities(selectedMunicipalities) {
       this.patient.brgy = "";
       this.getBrgys(this.patient.province, selectedMunicipalities);
     },
-
     getBrgys(provincial, municipal) {
       provinceJson.getBrgys(provincial, municipal).then(res => {
         this.bgryOpt = res;
       });
     }
+  },
+  deactivated() {
+    let patient = this.patient;
+    this.$store.dispatch("patient/personalDetails", patient);
   }
 };
 </script>

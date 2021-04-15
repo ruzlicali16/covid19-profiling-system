@@ -66,24 +66,18 @@
             hint="Format: Name / Age / Gender"
           />
         </div>
-        <div class="col-12 text-grey-9">
-          Please check the symptoms that apply
-        </div>
-        <div class="col-6 q-pt-none">
-          <q-option-group
-            :options="symptomsOptOne"
-            label="Notifications"
-            type="checkbox"
-            v-model="patient.symptomsOne"
-          />
-        </div>
-        <div class="col-6 q-pt-none">
-          <q-option-group
-            :options="symptomsOptTwo"
-            label="Notifications"
+        <div class="col-12">
+          <div class="text-grey-9">
+            Please list out the symptoms
+          </div>
+          <q-input
+            outlined
+            v-model="patient.symptoms"
+            label="Type here.."
             color="green"
-            type="checkbox"
-            v-model="patient.symptomsTwo"
+            type="textarea"
+            stack-label
+            hint="Format: High Fever / Cough / Difficulty Breathing"
           />
         </div>
       </q-card-section>
@@ -92,36 +86,51 @@
 </template>
 
 <script>
+import covidQuestionaire from "../../../services/covid-questionaire.service.js";
+
 export default {
   name: "CovidQuestionaire",
+  emits: ["check-inputs"],
   data() {
     return {
       patient: {
-        symptomsOne: [],
-        symptomsTwo: [],
         travelHistory: "",
         peopleContacted: "",
         visitedCountry: "",
-        household: ""
+        household: "",
+        symptoms: ""
       },
-      symptomsOptOne: [
-        { label: "High Fever", value: "High Fever" },
-        { label: "Difficulty in Breathing", value: "Difficulty in Breathing" },
-        { label: "Body Aches", value: "Body Aches" },
-        { label: "Runny Nose", value: "Runny Nose" },
-        { label: "Diarrhea", value: "Diarrhea" }
-      ],
-      symptomsOptTwo: [
-        { label: "Cought", value: "Cought" },
-        {
-          label: "Persistent Pain or Pressure in the Chest",
-          value: "Persistent Pain or Pressure in the Chest"
-        },
-        { label: "Nasal congestion", value: "Nasal congestion" },
-        { label: "Sore Throat", value: "Sore Throat" }
-      ],
+
       isUpdate: false
     };
+  },
+  updated() {
+    let patient = this.patient;
+    this.$emit("check-inputs", patient);
+  },
+  mounted() {
+    if (this.$route.params.id) {
+      this.getQuestionaireByID();
+    }
+  },
+  methods: {
+    getQuestionaireByID() {
+      let id = this.$route.params.id;
+      covidQuestionaire
+        .get(id)
+        .then(response => {
+          console.log(response.data);
+          this.patient = response.data;
+          this.isUpdate = true;
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
+    }
+  },
+  deactivated() {
+    let patient = this.patient;
+    this.$store.dispatch("patient/covidQuestionaire", patient);
   }
 };
 </script>
