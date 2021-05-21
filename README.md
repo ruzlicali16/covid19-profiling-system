@@ -1,2 +1,2 @@
 # covid19-profiling-system
-A Profiling System Project
+A Simple Portfolio Project using Quasar, Vue, NodeJS and ExpressJS
